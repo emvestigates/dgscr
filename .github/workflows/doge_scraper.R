@@ -14,7 +14,7 @@ driver$open()
 driver$navigate("https://doge.gov/savings")
 
 # Wait for a specific element (button) to ensure page has loaded
-button <- driver$findElement(using = "xpath", value = "/html/body/div/main/div/div/div[5]/div[2]/div/div/button")
+button <- driver$findElement(using = "xpath", value = "//*[@id="main-content"]/div/div/div[5]/div[2]/div/div/button")
 button$click()
 
 # Wait for the page to load

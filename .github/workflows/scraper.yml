@@ -24,13 +24,12 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
 
-      - name: Install packages
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::RSelenium
-            any::rvest
-            any::purrr
+      - name: Install dependencies
+        run: |
+          install.packages("RSelenium")
+          install.packages("wdman")
+          install.packages("rvest")
+          install.packages("purrr")
 
       - name: Use RSelenium to Scrape
         run: |

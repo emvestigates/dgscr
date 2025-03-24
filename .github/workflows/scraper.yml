@@ -6,6 +6,9 @@ on:
 jobs:
   rs_driver_test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allows write access to repository content (e.g., commit files)
+      actions: read  
 
     services:
       selenium:
@@ -50,10 +53,15 @@ jobs:
           write.csv(links_df, "scraped_links.csv", row.names = FALSE)
           driver$close()
       - name: Commit and Push CSV File to Repository
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Use the stored token as an environment variable
         run: |
-          # Set Git user configuration
+          # Set up git to use the GitHub token for authentication
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          
+          # Set the remote URL with the GitHub token for authentication
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
 
           # Add the CSV file to the git repository
           git add scraped_links.csv

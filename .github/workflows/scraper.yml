@@ -1,0 +1,65 @@
+name: Scrape DOGE Website
+
+on:
+  workflow_run:
+
+jobs:
+  rs_driver_test:
+    runs-on: ubuntu-latest
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome:latest
+        options: --shm-size 2g
+        ports:
+          - 4444:4444  
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install dependencies
+        run: |
+          install.packages("RSelenium")
+          install.packages("wdman")
+          install.packages("rvest")
+          install.packages("purrr")
+
+      - name: Use RSelenium to Scrape
+        run: |
+          library(RSelenium)
+          library(rvest)
+          library(purrr)
+          driver <- remoteDriver(
+            remoteServerAddr = "localhost",
+            port = 4444,
+            browserName = "chrome"
+          )
+          driver$open()
+          driver$navigate("https://doge.gov/savings")
+          button <- remote_driver$findElement(using = "xpath", value = "/html/body/div/main/div/div/div[5]/div[2]/div/div/button")
+          button$click() 
+          Sys.sleep(3)
+          page_source <- remote_driver$getPageSource()[[1]]
+          page <- LinkExtractor(page_source, ExternalLInks = TRUE)
+          fpds <- page$ExternalLinks
+          links_df <- data.frame(links = fpds)
+          write.csv(links_df, "scraped_links.csv", row.names = FALSE)
+          driver$close()
+      - name: Commit and Push CSV File to Repository
+        run: |
+          # Set Git user configuration
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          # Add the CSV file to the git repository
+          git add scraped_links.csv
+
+          # Commit the change
+          git commit -m "Add scraped links CSV"
+
+          # Push the changes back to the repository
+          git push

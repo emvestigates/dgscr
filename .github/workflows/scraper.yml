@@ -36,7 +36,7 @@ jobs:
 
       - name: Use RSelenium to Scrape
         run: |
-          Rscript doge_scraper.R
+          Rscript .github/workflows/doge_scraper.R
           
       - name: Commit and Push CSV File to Repository
         run: |

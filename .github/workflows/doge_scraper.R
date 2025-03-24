@@ -2,26 +2,22 @@ library(purrr)
 library(RSelenium)
 library(rvest)
 
-# Start the remote driver
-driver <- remoteDriver(
-  remoteServerAddr = "localhost",
-  port = 4444,
-  browserName = "chrome"
-)
-driver$open()
+url <- "https://doge.gov/savings"
+driver <- rsDriver(browser = "chrome")
+remote_driver <- driver[["client"]]
 
-# Navigate to the page
-driver$navigate("https://doge.gov/savings")
+# Navigate to the webpage
+remote_driver$navigate(url)
 
-# Wait for a specific element (button) to ensure page has loaded
-button <- driver$findElement(using = "xpath", value = "//*[@id="main-content"]/div/div/div[5]/div[2]/div/div/button")
+# Simulate scrolling to reveal hidden content (if needed)
+button <- remote_driver$findElement(using = "xpath", value = "/html/body/div/main/div/div/div[5]/div[2]/div/div/button")
 button$click()
 
-# Wait for the page to load
-Sys.sleep(5)
+# You can simulate more scrolls or interactions here if necessary.
+Sys.sleep(3)  # Wait for content to load
 
-# Check if page source is valid
-page_source <- driver$getPageSource()[[1]]
+# Get the page source after scrolling
+page_source <- remote_driver$getPageSource()[[1]]
 if (is.null(page_source) || nchar(page_source) == 0) {
   stop("Error: Page source is empty or NULL.")
 }
